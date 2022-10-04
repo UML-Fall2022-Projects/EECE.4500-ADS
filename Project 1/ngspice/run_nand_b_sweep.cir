@@ -1,0 +1,24 @@
+* run_inverter
+.include nand.cir
+
+* nand instance
+x1 a b out vdd vss nand
+
+* supply
+V0 vdd vss dc 1.2v
+V1 vss 0 0
+
+* voltage on the input
+Va a 0 1.2
+Vb b 0 0
+
+.control
+* simulation control block
+run
+* DC sweep on Vin
+dc Vb 0v 1.2v 0.01v
+* plot input and output
+plot b out
+.endc
+
+.end

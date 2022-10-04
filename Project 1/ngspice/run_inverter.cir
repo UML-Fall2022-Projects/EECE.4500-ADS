@@ -1,0 +1,22 @@
+* run_inverter
+.include inverter.cir
+
+* inverter instance
+x1 in out vdd vss inverter
+
+* supply
+V0 vdd vss dc 1.2v
+V1 vss 0 0
+
+* voltage on the input
+Vin in 0 0
+
+.control
+* simulation control block
+run
+* DC sweep on Vin
+dc Vin 0v 1.2v 0.01v
+* plot input and output
+plot in out
+.endc
+.end
