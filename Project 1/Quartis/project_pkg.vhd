@@ -3,6 +3,9 @@ use ieee.std_logic_1164.all;
 use ieee.math_real.all;
 
 package project_pkg is
+	-- type declarations
+	type arr_std_logic is array (natural range <>) of std_logic_vector(0 to 7);
+	
 	---- component declarations
 	--ring_oscillator
 	component ring_oscillator is
@@ -42,6 +45,18 @@ package project_pkg is
 			response: out std_logic
 		);
 	end component ro_puf;
+	
+	-- mux
+	component mux is
+		generic (
+			select_size: positive
+		);
+		port(
+			sel: in std_logic_vector(0 to select_size - 1);
+			input: in arr_std_logic(0 to 2**select_size-1);
+			output: out std_logic_vector(0 to 7)
+		);
+	end component mux;
 end package;
 
 package body project_pkg is

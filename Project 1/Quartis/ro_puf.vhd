@@ -9,7 +9,7 @@ use work.project_pkg.all;
 entity ro_puf is
 	generic (
 		ro_length: positive := 13;
-		ro_count: positive := 4
+		ro_count: positive := 8
 	);
 	port (
 		reset: in std_logic;
@@ -20,11 +20,12 @@ entity ro_puf is
 end entity ro_puf;
 
 architecture ro_puf1 of ro_puf is
-	type arr_std_logic is array (natural range <>) of std_logic_vector(0 to 7);
 	signal counters_out: arr_std_logic(0 to ro_count - 1);
 	signal counters_in: std_logic_vector(0 to ro_count - 1);
-	signal top_out: std_logic_vector() := 0;
-	signal bottom_out: std_logic_vector() := 0;
+	
+	signal mux_outs: arr_std_logic(0 to 1);
+	
+	constant mux_select_size: positive := positive(ceil(log2(real(ro_count / 2))));
 		
 	function power_of_two(num: in natural) return boolean is
 		variable total_bits: integer := 0;
@@ -61,4 +62,18 @@ begin
 				osc_out => counters_in(oscillator)
 			);
 	end generate ring_oscillators;
+	
+	muxes: for mu in 0 to 1 generate
+		u0: mux
+			generic map (
+				select_size => mux_select_size
+			)
+			port map (
+				sel => challenge(mu * (challenge'length - mux_select_size) to positive(ceil(log2(real(ro_count) / real(2) * real((mu + 1))))) - 1),
+				input => counters_out(mu * (counters_out'length / 2) to counters_out'length / 2 * (mu + 1) - 1),
+				output => mux_outs(mu)
+			);
+	end generate muxes;
+	
+	response <= '1' when to_integer(unsigned(mux_outs(0))) > to_integer(unsigned(mux_outs(1))) else '0';
 end architecture ro_puf1;
