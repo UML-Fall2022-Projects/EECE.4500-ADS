@@ -9,7 +9,7 @@ use work.project_pkg.all;
 entity ro_puf is
 	generic (
 		ro_length: positive := 13;
-		ro_count: positive := 2
+		ro_count: positive := 4
 	);
 	port (
 		reset: in std_logic;
@@ -29,12 +29,10 @@ architecture ro_puf1 of ro_puf is
 		
 	function power_of_two(num: in natural) return boolean is
 		variable total_bits: integer := 0;
-		variable iters: integer := 0;
 		constant num_bits: integer := integer(ceil(log2(real(num))));
 		constant num_vec: std_logic_vector := std_logic_vector(to_unsigned(num, num_bits));
 	begin
 		for i in num_vec'range loop
-			iters := iters + 1;
 			if num_vec(i) = '1' then
 				total_bits := total_bits + 1;
 			end if;
@@ -43,7 +41,7 @@ architecture ro_puf1 of ro_puf is
 	end function;
 begin
 	-- Ensure ro_count is a power of two (note: does not work as of now)
-	assert power_of_two(ro_count) = true report "invalid ro count" severity error;
+	assert power_of_two(ro_count) = true and ro_count > 2 report "invalid ro count" severity error;
 	
 	counters: for stage in counters_out'range generate
 		u0: counter

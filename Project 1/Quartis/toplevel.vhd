@@ -14,7 +14,7 @@ entity toplevel is
 		ro_count: positive := 16
 	);
 	port (
-		-- reset: in std_logic;
+		reset: in std_logic;
 		clock: in std_logic;
 		done: out std_logic
 	);
@@ -23,69 +23,50 @@ end entity toplevel;
 architecture toplevel1 of toplevel is
 	constant num_challenges: positive :=  ro_count**2 / 4;
 	
-	signal reset: std_logic := '1';
-	signal enable: std_logic := '0';
-	signal current_challenge: std_logic_vector(0 to 2 * positive(ceil(log2(real(ro_count / 2)))) - 1);
-	signal write_mem: std_logic := '1';
+	signal enable_puf, reset_puf: std_logic := '0';
+	signal challenge: std_logic_vector(0 to 2 * positive(ceil(log2(real(ro_count / 2)))) - 1);
+	signal write_mem: std_logic := '0';
 	signal response: std_logic;
-	signal stage: std_logic;
-	signal accumulated_time: positive;
+	signal response_vec: std_logic_vector(0 to 0) := (others => '0');
 begin
 	assert ro_length >= 13 report "ro length too small!" severity error;
 	assert ro_count >= 16 report "ro count too small!" severity error;
 	
-	process(clock) is
-	begin
-		
-	end process;
-	
-	process(clock, reset) is
-	begin
-		if rising_edge(clock) then
-			write_mem := '0';
-			if reset = '0' then
-				done <= '0';
-				current_challenge <= (others => '0');
-			end if;
-			
-			if done <= '1' then
-				reset <= '0';
-				enable <= '1';
-				current_challenge <= std_logic_vector(to_unsigned(challenge, current_challenge'length));
-				reset <= '1';
-				--wait for probe_delay us;
-				
-				enable <= '0';
-				-- Store to RAM
-				write_mem = '1';
-				
-				if current_challenge = std_logic_vector(to_unsigned(num_challenge - 1, current_challenge'length)) then
-					done <= '1';
-				end if;
-				
-				-- increment challenge
-				current_challenge <= std_logic_vector(to_unsigned(to_integer(unsigned(current_challenge)) + 1, current_challenge'length));
-			end if;
-		end if;
-	end process;
+	cu: control_unit
+		generic map (
+			clock_freq => clock_freq,
+			probe_delay => probe_delay,
+			ro_count => ro_count
+		)
+		port map (
+			reset => reset,
+			clock => clock,
+			reset_ro_puf => reset_puf,
+			enable_ro_puf => enable_puf,
+			ram_write_enable => write_mem,
+			challenge => challenge,
+			done => done
+		);
 	
 	puf: ro_puf
 		generic map (
-			ro_length <= ro_length,
-			ro_count <= ro_count
+			ro_length => ro_length,
+			ro_count => ro_count
 		)
 		port map (
-			reset <= reset,
-			enable <= enable,
-			challenge <= current_challenge,
-			response <= response
+			reset => reset_puf,
+			enable => enable_puf,
+			challenge => challenge,
+			response => response
 		);
 	
 	mem: ram
 		port map (
-			address <= current_challenge,
-			clock <= clock,
-			data <= response,
-			wren <= write_mem
+			address => challenge,
+			clock => clock,
+			data => response_vec,
+			wren => write_mem
 		);
+        
+    response_vec(0) <= response;
 end architecture toplevel1;

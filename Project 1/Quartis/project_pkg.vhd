@@ -10,7 +10,7 @@ package project_pkg is
 	--ring_oscillator
 	component ring_oscillator is
 		generic(
-			ro_length: positive := 13
+			ro_length: positive
 		);
 		port (
 			enable: in std_logic;
@@ -41,7 +41,7 @@ package project_pkg is
 		port (
 			reset: in std_logic;
 			enable: in std_logic;
-			challenge: in std_logic_vector(0 to positive(ceil(log2(real(ro_count)))) - 1);
+			challenge: in std_logic_vector(0 to 2 * positive(ceil(log2(real(ro_count / 2)))) - 1);
 			response: out std_logic
 		);
 	end component ro_puf;
@@ -67,6 +67,24 @@ package project_pkg is
 			q: OUT STD_LOGIC_VECTOR (0 DOWNTO 0)
 		);
 	end component ram;
+	
+	-- control unit
+	component control_unit is
+		generic (
+			clock_freq: positive := 50000000;
+			probe_delay: positive := 100;
+			ro_count: positive := 16
+		);
+		port (
+			reset: in std_logic;
+			clock: in std_logic;
+			reset_ro_puf: out std_logic;
+			enable_ro_puf: out std_logic;
+			ram_write_enable: out std_logic;
+			challenge: buffer std_logic_vector(0 to 2 * positive(ceil(log2(real(ro_count / 2)))) - 1);
+			done: out std_logic
+		);
+	end component control_unit;
 end package;
 
 package body project_pkg is
