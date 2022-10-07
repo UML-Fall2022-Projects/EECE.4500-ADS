@@ -57,6 +57,16 @@ package project_pkg is
 			output: out std_logic_vector(0 to 7)
 		);
 	end component mux;
+	
+	component ram is
+		port (
+			address: IN STD_LOGIC_VECTOR (5 DOWNTO 0);
+			clock: IN STD_LOGIC  := '1';
+			data: IN STD_LOGIC_VECTOR (0 DOWNTO 0);
+			wren: IN STD_LOGIC;
+			q: OUT STD_LOGIC_VECTOR (0 DOWNTO 0)
+		);
+	end component ram;
 end package;
 
 package body project_pkg is
