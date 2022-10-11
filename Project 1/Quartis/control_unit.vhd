@@ -75,11 +75,59 @@ begin
 		end if;
 	end process save_state;
 	
-	-- outputs
-   reset_ro_puf <= '0' when state = Reset_PUF else '1';
-	enable_ro_puf <= '1' when state = Assert_Enable or state = Wait_Time else '0';
-	ram_write_enable <= '1' when state = Set_Write_Enable else '0';
-	wait_counter_value <= wait_counter_value + 1 when state = Wait_Time else 0;
-	challenge <= challenge + 1 when state = Next_Challenge else (others => '0') when state = Init else challenge;
-	done <= '1' when state = Done_State else '0';
+	-- output function
+	output_function: process(clock, reset) is
+	begin
+		if reset = '0' then
+			reset_ro_puf <= '1';
+			enable_ro_puf <= '0';
+			ram_write_enable <= '0';
+			wait_counter_value <= 0;
+			challenge <= (others => '0');
+			done <= '0';
+		elsif rising_edge(clock) then
+			if state = Init then
+				reset_ro_puf <= '1';
+				enable_ro_puf <= '0';
+				ram_write_enable <= '0';
+				wait_counter_value <= 0;
+				challenge <= (others => '0');
+				done <= '0';
+			end if;
+		
+			if state = Reset_PUF then
+				reset_ro_puf <= '0';
+			else
+				reset_ro_puf <= '1';
+			end if;
+			
+			if state = Assert_Enable or state = Wait_Time then
+				enable_ro_puf <= '1';
+			else
+				enable_ro_puf <= '0';
+			end if;
+			
+			if state = Set_Write_Enable then
+				ram_write_enable <= '1';
+			else
+				ram_write_enable <= '0';
+			end if;
+			
+			if state = Wait_Time then
+				wait_counter_value <= wait_counter_value + 1;
+			else
+				wait_counter_value <= 0;
+			end if;
+			
+			if state = Next_Challenge then
+				challenge <= challenge + 1;
+			end if;
+			
+			if state = Done_State then
+				done <= '1';
+			else
+				done <= '0';
+			end if;
+		end if;
+	end process output_function;
 end architecture cu1;
