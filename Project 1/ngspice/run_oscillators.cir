@@ -1,0 +1,38 @@
+*run_oscillators
+
+.include ring_oscillator_0.cir
+.include ring_oscillator_1.cir
+.include ring_oscillator_2.cir
+.include ring_oscillator_3.cir
+.include ring_oscillator_4.cir
+.include ring_oscillator_5.cir
+.include ring_oscillator_6.cir
+.include ring_oscillator_7.cir
+
+* oscillator instance
+x1 enable out1 vdd vss ring_oscillator_0
+x2 enable out2 vdd vss ring_oscillator_1
+x3 enable out3 vdd vss ring_oscillator_2
+x4 enable out4 vdd vss ring_oscillator_3
+x5 enable out5 vdd vss ring_oscillator_4
+x6 enable out6 vdd vss ring_oscillator_5
+x7 enable out7 vdd vss ring_oscillator_6
+x8 enable out8 vdd vss ring_oscillator_7
+
+* supply
+V0 vdd vss dc 1.2v
+V1 vss 0 0
+
+* voltage on the input
+Vin enable 0 dc 0 PULSE (0 1.2 1n 1n 1n 10n 5n)
+
+.control
+* simulation control block
+run
+* DC sweep on Vin
+*dc Vin 0v 1.2v 0.01v
+* plot input and output
+tran 1n 5n
+plot enable out1 out2 out3 out4 out5 out6 out7 out8
+.endc
+.end
