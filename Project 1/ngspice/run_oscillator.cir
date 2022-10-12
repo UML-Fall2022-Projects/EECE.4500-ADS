@@ -1,0 +1,23 @@
+*run_oscillator
+.include ring_oscillator.cir
+
+* oscillator instance
+x1 enable out vdd vss ring_oscillator
+
+* supply
+V0 vdd vss dc 1.2v
+V1 vss 0 0
+
+* voltage on the input
+Vin enable 0 dc 0 PULSE (0 1.2 1n 1n 1n 1n 5n)
+
+.control
+* simulation control block
+run
+* DC sweep on Vin
+*dc Vin 0v 1.2v 0.01v
+* plot input and output
+tran 1n 5n
+plot enable out
+.endc
+.end
