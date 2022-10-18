@@ -79,7 +79,7 @@ package body ads_complex_pkg is
 			l, r: in ads_complex
 		) return ads_complex
 	is
-		variable ret: ads_complex
+		variable ret: ads_complex;
 	begin
 		ret.re := l.re - r.re;
 		ret.im := l.im - r.im;
@@ -90,7 +90,7 @@ package body ads_complex_pkg is
 			l, r: in ads_complex
 		) return ads_complex
 	is
-		variable ret: ads_complex
+		variable ret: ads_complex;
 	begin
 		ret.re := l.re * r.re - l.im * r.im;
 		ret.im := l.re * r.im + l.im * r.re;
@@ -101,17 +101,17 @@ package body ads_complex_pkg is
 			arg: in ads_complex
 		) return ads_complex
 	is
-		variable ret: ads_complex
+		variable ret: ads_complex;
 	begin
 		ret.im := -arg.im;
 		return ret;
-	end function "conj"
+	end function conj;
 
 	function abs2 (
 			arg: in ads_complex
 		) return ads_sfixed
 	is
-		variable ret: ads_sfixed
+		variable ret: ads_sfixed;
 	begin
 		ret := arg.re * arg.re + arg.im * arg.im;
 		return ret;
