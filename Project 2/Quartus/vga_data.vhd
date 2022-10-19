@@ -81,9 +81,8 @@ package vga_data is
 
 	constant vga_res_1920x1080:	vga_timing := vga_res_data(0);
 	constant vga_res_640x480:	vga_timing := vga_res_data(1);
-	constant vga_res_800x600:	vga_timing := vga_res_data(2);	-- TODO: initialize
-	constant vga_res_default:	vga_timing := vga_res_640x480;	-- TODO: initialize to your
-												-- target resolution
+	constant vga_res_800x600:	vga_timing := vga_res_data(2);
+	constant vga_res_default:	vga_timing := vga_res_640x480;
 
 	---- TODO: some functions need to be implemented
 	-- return true if the x coordinate is on the visible area
@@ -237,8 +236,6 @@ package body vga_data is
 		if ret.y = timing_range(vga_res, vertical) then
 			ret.y := 0;
 		end if;
-
-		--ret.y := ret.y mod timing_range(vga_res, vertical);
 
 		return ret;
 	end function next_coordinate;

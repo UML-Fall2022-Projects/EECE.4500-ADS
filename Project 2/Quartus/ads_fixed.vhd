@@ -16,9 +16,11 @@ package ads_fixed is
 
 	-- other constants
 	constant ads_minimum_value: ads_sfixed :=
-				'1' & (msb - 1 downto -lsb => '0');
+				( msb => '1', others => '0' );
+	--				'1' & (msb - 1 downto -lsb => '0');
 	constant ads_maximum_value: ads_sfixed :=
-				'0' & (msb - 1 downto -lsb => '1');
+				( msb => '0', others => '1' );
+	--			'0' & (msb - 1 downto -lsb => '1');
 
 	-- functions
 	function to_ads_sfixed (
