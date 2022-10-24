@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
 library vga;
 use vga.vga_data.all;
@@ -12,6 +13,9 @@ entity vga_test is
 	port (
 		system_clock: in std_logic;
 		reset: in std_logic;
+		
+		red: in std_logic_vector(0 to 3);
+		blue: in std_logic_vector(0 to 3);
 		
 		r: out std_logic_vector(0 to 3);
 		g: out std_logic_vector(0 to 3);
@@ -26,6 +30,10 @@ architecture test of vga_test is
 	signal point_valid: boolean;
 	
 	signal vga_clock: std_logic;
+	
+	--constant red: natural := 12;
+	constant green: natural := 1;
+	--constant blue: natural := 12;
 	
 	component pll
 	PORT
@@ -53,7 +61,7 @@ begin
 			v_sync => v_sync
 		);
 		
-	r <= (others => '0');
-	g <= (others => '0');
-	b <= (others => '1') when point_valid else (others => '0');
+	r <= red when point_valid else (others => '0');
+	g <= std_logic_vector(to_unsigned(green, 4)) when point_valid else (others => '0');
+	b <= blue when point_valid else (others => '0');
 end architecture test;

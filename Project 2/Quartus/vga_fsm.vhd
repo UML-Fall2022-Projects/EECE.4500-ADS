@@ -56,14 +56,17 @@ begin
 	begin
 		if reset = '0' then
 			coord <= make_coordinate(0, 0);
+			h_sync <= do_horizontal_sync(coord, vga_res);
+			v_sync <= do_vertical_sync(coord, vga_res);
+			point_valid <= point_visible(coord, vga_res);
+			point <= coord;
 		elsif rising_edge(vga_clock) then
 			coord <= next_coordinate(coord, vga_res);
+			h_sync <= do_horizontal_sync(coord, vga_res);
+			v_sync <= do_vertical_sync(coord, vga_res);
+			point_valid <= point_visible(coord, vga_res);
+			point <= coord;
 		end if;
 	end process output_function;
-	
-	h_sync <= do_horizontal_sync(coord, vga_res);
-	v_sync <= do_vertical_sync(coord, vga_res);
-	point_valid <= point_visible(coord, vga_res);
-	point <= coord;
 
 end architecture fsm;
