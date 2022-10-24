@@ -227,10 +227,11 @@ package body vga_data is
 			variable ret: coordinate;
 	begin
 		ret.x := point.x + 1;
-		ret.y := point.y + 1;
+		ret.y := point.y;
 
 		if ret.x = timing_range(vga_res, horizontal) then
 			ret.x := 0;
+			ret.y := point.y + 1;
 		end if;
 		
 		if ret.y = timing_range(vga_res, vertical) then
