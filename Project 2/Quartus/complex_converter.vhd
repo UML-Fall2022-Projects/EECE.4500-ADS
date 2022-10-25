@@ -11,8 +11,7 @@ use ads.ads_complex_pkg.all;
 
 entity complex_converter is
 	generic (
-		width: natural := 640;
-		height: natural := 480
+		vga_res: vga_timing := vga_res_default
 	);
 	port (
 		system_clock: in std_logic;
@@ -22,17 +21,24 @@ entity complex_converter is
 end entity complex_converter;
 
 architecture test of complex_converter is
-	constant half_width: natural := width / 2;
-	constant half_height: natural := height / 2;
+	constant width: natural := vga_res.horizontal.active;
+	constant height: natural := vga_res.vertical.active;
+	constant aspect_ratio: real := real(width) / real(height);
 	
-	signal pixel_space: coordinate;
+	constant normalized_width: real := real(4);
+	constant normalized_height: real := real(normalized_width) / aspect_ratio;
+	constant dx: ads_sfixed := to_ads_sfixed(normalized_width / real(width));
+	constant dy: ads_sfixed := to_ads_sfixed(normalized_height / real(height));
 begin
 	convert: process(system_clock) is
+		variable normal_space: ads_complex;
 	begin
 		if rising_edge(system_clock) then
-			pixel_space.x <= pixel_coord.x - half_width;
-			pixel_space.y <= half_height - pixel_coord.y;
-			complex_coord <= ads_cmplx(to_ads_sfixed(pixel_space.x), to_ads_sfixed(pixel_space.y));
+			normal_space.re := to_ads_sfixed(pixel_coord.x) * dx;
+			normal_space.im := to_ads_sfixed(pixel_coord.y) * dy;
+			
+			complex_coord.re <= normal_space.re - to_ads_sfixed(normalized_width / real(2));
+			complex_coord.im <= to_ads_sfixed(normalized_height / real(2)) - normal_space.im;
 		end if;
 	end process convert;
 end architecture test;
