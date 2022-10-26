@@ -37,17 +37,26 @@ architecture mandel_gen of mandelbrot_gen is
 begin
 	
 	process(system_clock) is
+		variable re2: ads_sfixed;
+		variable im2: ads_sfixed;
+		variable re_im: ads_sfixed;
 	begin
 		if rising_edge(system_clock) then
 			for i in iterations downto 1 loop
-				f_of_z(i) <= f_of_z(i - 1) * f_of_z(i - 1) + coords_list(i);
+				re2 := f_of_z(i - 1).re * f_of_z(i - 1).re;
+				im2 := f_of_z(i - 1).im * f_of_z(i - 1).im;
+				re_im := f_of_z(i - 1).re * f_of_z(i - 1).im;
+				
+				f_of_z(i).re <= re2 - im2 + coords_list(i).re;
+				f_of_z(i).im <= re_im + re_im + coords_list(i).im;
+				
 				coords_list(i) <= coords_list(i - 1);
 				if thresholds(i - 1) = '1' then
 					thresholds(i) <= thresholds(i - 1);
 					iteration_signal(i) <= iteration_signal(i - 1);
 				else
 					iteration_signal(i) <= i - 1;
-					if abs2(f_of_z(i)) > to_ads_sfixed(threshold) then
+					if (re2 + im2) > to_ads_sfixed(threshold) then
 						thresholds(i) <= '1';
 					else
 						thresholds(i) <= '0';
