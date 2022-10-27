@@ -18,6 +18,7 @@ entity mandelbrot_gen is
 	port (
 		coords: in ads_complex;
 		system_clock: in std_logic;
+		reset: in std_logic;
 		
 		index_o: out natural
 		
@@ -36,13 +37,21 @@ architecture mandel_gen of mandelbrot_gen is
 	signal iteration_signal: iterated_array(0 to iterations) := (others => 0);
 begin
 	
-	process(system_clock) is
+	process(system_clock, reset) is
 		variable re2: ads_sfixed;
 		variable im2: ads_sfixed;
 		variable re_im: ads_sfixed;
 	begin
-		if rising_edge(system_clock) then
+		if reset = '0' then
+			f_of_z <= (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
+			coords_list <= (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
+			thresholds <= (others => '0');
+			iteration_signal <= (others => 0);
+		elsif rising_edge(system_clock) then
+			coords_list(0) <= coords;
 			for i in iterations downto 1 loop
+				coords_list(i) <= coords_list(i - 1);
+			
 				re2 := f_of_z(i - 1).re * f_of_z(i - 1).re;
 				im2 := f_of_z(i - 1).im * f_of_z(i - 1).im;
 				re_im := f_of_z(i - 1).re * f_of_z(i - 1).im;
@@ -50,7 +59,6 @@ begin
 				f_of_z(i).re <= re2 - im2 + coords_list(i).re;
 				f_of_z(i).im <= re_im + re_im + coords_list(i).im;
 				
-				coords_list(i) <= coords_list(i - 1);
 				if thresholds(i - 1) = '1' then
 					thresholds(i) <= thresholds(i - 1);
 					iteration_signal(i) <= iteration_signal(i - 1);
@@ -63,7 +71,6 @@ begin
 					end if;
 				end if;
 			end loop;
-			coords_list(0) <= coords;
 			index_o <= iteration_signal(iterations);
 		end if;
 	end process;
