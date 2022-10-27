@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity delay is
 	generic (
-		-- complex_converter: 1 clk.
+		-- complex_converter: 1 clk
 		-- mandelbrot_gen: iterations + 1 clk
 		clock_delay: natural := 18
 	);
@@ -19,8 +19,9 @@ entity delay is
 end entity delay;
 
 architecture shift_reg_impl of delay is
-	signal vreg: std_logic_vector(clock_delay - 1 downto 0) := (others => '0');
-	signal hreg: std_logic_vector(clock_delay - 1 downto 0) := (others => '0');
+	-- A register of n width takes n + 1 clocks from in to out.
+	signal vreg: std_logic_vector(clock_delay - 2 downto 0) := (others => '0');
+	signal hreg: std_logic_vector(clock_delay - 2 downto 0) := (others => '0');
 begin
 	shift: process(system_clock, reset)
 	begin

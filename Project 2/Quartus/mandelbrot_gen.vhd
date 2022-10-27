@@ -10,7 +10,6 @@ use ads.ads_fixed.all;
 use ads.ads_complex_pkg.all;
 
 entity mandelbrot_gen is
-
 	generic (
 		iterations: natural := 16;
 		threshold: natural := 4
@@ -21,7 +20,6 @@ entity mandelbrot_gen is
 		reset: in std_logic;
 		
 		index_o: out natural
-		
 	);
 end entity mandelbrot_gen;
 

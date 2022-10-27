@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "MAX 10"
 set_global_assignment -name DEVICE 10M50DAF484C7G
-set_global_assignment -name TOP_LEVEL_ENTITY delay
+set_global_assignment -name TOP_LEVEL_ENTITY fractal
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 21.1.1
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "20:55:50  OCTOBER 17, 2022"
 set_global_assignment -name LAST_QUARTUS_VERSION "21.1.1 Lite Edition"
@@ -63,26 +63,19 @@ set_location_assignment PIN_T2 -to g[1]
 set_location_assignment PIN_R2 -to g[2]
 set_location_assignment PIN_R1 -to g[3]
 set_location_assignment PIN_A7 -to reset
-set_location_assignment PIN_N3 -to h_sync
-set_location_assignment PIN_N1 -to v_sync
-set_location_assignment PIN_C10 -to red[0]
-set_location_assignment PIN_C11 -to red[1]
-set_location_assignment PIN_D12 -to red[2]
-set_location_assignment PIN_C12 -to red[3]
-set_location_assignment PIN_A12 -to blue[0]
-set_location_assignment PIN_B12 -to blue[1]
-set_location_assignment PIN_A13 -to blue[2]
-set_location_assignment PIN_A14 -to blue[3]
 set_global_assignment -name VHDL_FILE mandelbrot_gen.vhd
 set_global_assignment -name VHDL_FILE vga_data.vhd -library VGA
 set_global_assignment -name VHDL_FILE ads_fixed.vhd -library ADS
 set_global_assignment -name VHDL_FILE ads_complex.vhd -library ADS
 set_global_assignment -name QIP_FILE pll.qip
 set_global_assignment -name VHDL_FILE vga_fsm.vhd
-set_global_assignment -name VHDL_FILE vga_test.vhd
 set_global_assignment -name VHDL_FILE complex_converter.vhd
 set_global_assignment -name VHDL_FILE delay.vhd
+set_global_assignment -name VHDL_FILE fractal.vhd
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name VHDL_FILE project_pkg.vhd
+set_location_assignment PIN_N3 -to hsync
+set_location_assignment PIN_N1 -to vsync
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
