@@ -8,7 +8,7 @@ entity delay is
 		clock_delay: natural := 18
 	);
 	port (
-		system_clock: in std_logic;
+		vga_clock: in std_logic;
 		reset: in std_logic;
 		enable: in std_logic;
 	
@@ -24,14 +24,14 @@ architecture shift_reg_impl of delay is
 	signal vreg: std_logic_vector(clock_delay - 2 downto 0) := (others => '0');
 	signal hreg: std_logic_vector(clock_delay - 2 downto 0) := (others => '0');
 begin
-	shift: process(system_clock, reset)
+	shift: process(vga_clock, reset)
 	begin
 		if reset = '0' then
 			vreg <= (others => '0');
 			hreg <= (others => '0');
 			out_vsync <= '0';
 			out_hsync <= '0';
-		elsif enable = '1' and rising_edge(system_clock) then
+		elsif enable = '1' and rising_edge(vga_clock) then
 			out_vsync <= vreg(vreg'left);
 			out_hsync <= hreg(hreg'left);
 			

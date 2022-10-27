@@ -14,7 +14,7 @@ entity complex_converter is
 		vga_res: vga_timing := vga_res_default
 	);
 	port (
-		system_clock: in std_logic;
+		vga_clock: in std_logic;
 		reset: in std_logic;
 		enable: in std_logic;
 		
@@ -33,12 +33,12 @@ architecture test of complex_converter is
 	constant dx: ads_sfixed := to_ads_sfixed(normalized_width / real(width));
 	constant dy: ads_sfixed := to_ads_sfixed(normalized_height / real(height));
 begin
-	convert: process(system_clock, reset) is
+	convert: process(vga_clock, reset) is
 		variable normal_space: ads_complex;
 	begin
 		if reset = '0' then
 			complex_coord <= ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0));
-		elsif enable = '1' and rising_edge(system_clock) then
+		elsif enable = '1' and rising_edge(vga_clock) then
 			normal_space.re := to_ads_sfixed(pixel_coord.x) * dx;
 			normal_space.im := to_ads_sfixed(pixel_coord.y) * dy;
 			

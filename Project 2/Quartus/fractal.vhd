@@ -16,7 +16,7 @@ use ads.ads_complex_pkg.all;
 entity fractal is
 	generic (
 		vga_res: vga_timing := vga_res_640x480;
-		iterations: natural := 16
+		iterations: natural := 28
 	);
 	port (
 		system_clock: in std_logic;
@@ -96,7 +96,7 @@ begin
 			clock_delay => iterations + 2
 		)
 		port map (
-			system_clock => vga_clock,
+			vga_clock => vga_clock,
 			reset => reset,
 			enable => enable,
 		
@@ -111,7 +111,7 @@ begin
 			vga_res => vga_res
 		)
 		port map (
-			system_clock => vga_clock,
+			vga_clock => vga_clock,
 			reset => reset,
 			enable => enable,
 			
@@ -126,7 +126,7 @@ begin
 		)
 		port map (
 			coords => complex_coord,
-			system_clock => vga_clock,
+			vga_clock => vga_clock,
 			reset => reset,
 			enable => enable,
 			

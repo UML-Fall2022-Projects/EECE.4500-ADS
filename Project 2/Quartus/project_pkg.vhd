@@ -15,7 +15,7 @@ package fractal_pkg is
 			vga_res: vga_timing := vga_res_default
 		);
 		port (
-			system_clock: in std_logic;
+			vga_clock: in std_logic;
 			reset: in std_logic;
 			enable: in std_logic;
 			
@@ -31,7 +31,7 @@ package fractal_pkg is
 		);
 		port (
 			coords: in ads_complex;
-			system_clock: in std_logic;
+			vga_clock: in std_logic;
 			reset: in std_logic;
 			enable: in std_logic;
 			
@@ -46,7 +46,7 @@ package fractal_pkg is
 			clock_delay: natural := 18
 		);
 		port (
-			system_clock: in std_logic;
+			vga_clock: in std_logic;
 			reset: in std_logic;
 			enable: in std_logic;
 		

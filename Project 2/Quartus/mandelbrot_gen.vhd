@@ -16,7 +16,7 @@ entity mandelbrot_gen is
 	);
 	port (
 		coords: in ads_complex;
-		system_clock: in std_logic;
+		vga_clock: in std_logic;
 		reset: in std_logic;
 		enable: in std_logic;
 		
@@ -36,7 +36,7 @@ architecture mandel_gen of mandelbrot_gen is
 	signal iteration_signal: iterated_array(0 to iterations) := (others => 0);
 begin
 	
-	process(system_clock, reset) is
+	process(vga_clock, reset) is
 		variable re2: ads_sfixed;
 		variable im2: ads_sfixed;
 		variable re_im: ads_sfixed;
@@ -46,7 +46,7 @@ begin
 			coords_list <= (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
 			thresholds <= (others => '0');
 			iteration_signal <= (others => 0);
-		elsif enable = '1' and rising_edge(system_clock) then
+		elsif enable = '1' and rising_edge(vga_clock) then
 			coords_list(0) <= coords;
 			for i in iterations downto 1 loop
 				coords_list(i) <= coords_list(i - 1);

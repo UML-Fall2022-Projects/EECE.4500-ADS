@@ -42,7 +42,7 @@ entity vga_fsm is
 		point_valid:	out	boolean;
 
 		h_sync:			out	std_logic;
-		v_sync:			out std_logic
+		v_sync:			out   std_logic
 	);
 end entity vga_fsm;
 
