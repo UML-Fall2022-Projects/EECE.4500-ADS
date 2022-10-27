@@ -18,6 +18,7 @@ entity mandelbrot_gen is
 		coords: in ads_complex;
 		system_clock: in std_logic;
 		reset: in std_logic;
+		enable: in std_logic;
 		
 		index_o: out natural
 	);
@@ -45,7 +46,7 @@ begin
 			coords_list <= (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
 			thresholds <= (others => '0');
 			iteration_signal <= (others => 0);
-		elsif rising_edge(system_clock) then
+		elsif enable = '1' and rising_edge(system_clock) then
 			coords_list(0) <= coords;
 			for i in iterations downto 1 loop
 				coords_list(i) <= coords_list(i - 1);

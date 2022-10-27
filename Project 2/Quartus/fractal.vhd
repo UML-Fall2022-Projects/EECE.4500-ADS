@@ -21,6 +21,7 @@ entity fractal is
 	port (
 		system_clock: in std_logic;
 		reset: in std_logic;
+		enable: in std_logic;
 		
 		r: out std_logic_vector(0 to 3);
 		g: out std_logic_vector(0 to 3);
@@ -79,6 +80,7 @@ begin
 		port map (
 			vga_clock => vga_clock,
 			reset => reset,
+			enable => enable,
 
 			point => pixel,
 			point_valid => pixel_valid,
@@ -94,8 +96,9 @@ begin
 			clock_delay => iterations + 2
 		)
 		port map (
-			system_clock => system_clock,
+			system_clock => vga_clock,
 			reset => reset,
+			enable => enable,
 		
 			in_vsync => gen_vsync,
 			in_hsync => gen_hsync,
@@ -108,8 +111,9 @@ begin
 			vga_res => vga_res
 		)
 		port map (
-			system_clock => system_clock,
+			system_clock => vga_clock,
 			reset => reset,
+			enable => enable,
 			
 			pixel_coord => pixel,
 			complex_coord => complex_coord
@@ -122,8 +126,9 @@ begin
 		)
 		port map (
 			coords => complex_coord,
-			system_clock => system_clock,
+			system_clock => vga_clock,
 			reset => reset,
+			enable => enable,
 			
 			index_o => color_index
 		);

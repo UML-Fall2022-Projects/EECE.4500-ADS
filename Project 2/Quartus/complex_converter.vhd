@@ -16,6 +16,7 @@ entity complex_converter is
 	port (
 		system_clock: in std_logic;
 		reset: in std_logic;
+		enable: in std_logic;
 		
 		pixel_coord: in coordinate;
 		complex_coord: out ads_complex
@@ -37,7 +38,7 @@ begin
 	begin
 		if reset = '0' then
 			complex_coord <= ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0));
-		elsif rising_edge(system_clock) then
+		elsif enable = '1' and rising_edge(system_clock) then
 			normal_space.re := to_ads_sfixed(pixel_coord.x) * dx;
 			normal_space.im := to_ads_sfixed(pixel_coord.y) * dy;
 			

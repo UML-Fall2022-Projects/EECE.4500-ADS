@@ -10,6 +10,7 @@ entity delay is
 	port (
 		system_clock: in std_logic;
 		reset: in std_logic;
+		enable: in std_logic;
 	
 		in_vsync: in std_logic;
 		in_hsync: in std_logic;
@@ -30,7 +31,7 @@ begin
 			hreg <= (others => '0');
 			out_vsync <= '0';
 			out_hsync <= '0';
-		elsif rising_edge(system_clock) then
+		elsif enable = '1' and rising_edge(system_clock) then
 			out_vsync <= vreg(vreg'left);
 			out_hsync <= hreg(hreg'left);
 			

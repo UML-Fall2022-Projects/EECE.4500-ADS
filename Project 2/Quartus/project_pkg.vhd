@@ -17,6 +17,7 @@ package fractal_pkg is
 		port (
 			system_clock: in std_logic;
 			reset: in std_logic;
+			enable: in std_logic;
 			
 			pixel_coord: in coordinate;
 			complex_coord: out ads_complex
@@ -32,6 +33,7 @@ package fractal_pkg is
 			coords: in ads_complex;
 			system_clock: in std_logic;
 			reset: in std_logic;
+			enable: in std_logic;
 			
 			index_o: out natural
 		);
@@ -46,6 +48,7 @@ package fractal_pkg is
 		port (
 			system_clock: in std_logic;
 			reset: in std_logic;
+			enable: in std_logic;
 		
 			in_vsync: in std_logic;
 			in_hsync: in std_logic;

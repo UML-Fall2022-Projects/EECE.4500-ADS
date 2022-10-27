@@ -12,6 +12,7 @@ package vga_fsm_pkg is
 		port (
 			vga_clock:		in	std_logic;
 			reset:			in	std_logic;
+			enable:			in std_logic;
 
 			point:			out	coordinate;
 			point_valid:	out	boolean;
@@ -35,6 +36,7 @@ entity vga_fsm is
 	port (
 		vga_clock:		in	std_logic;
 		reset:			in	std_logic;
+		enable:			in std_logic;
 
 		point:			out	coordinate;
 		point_valid:	out	boolean;
@@ -45,13 +47,8 @@ entity vga_fsm is
 end entity vga_fsm;
 
 architecture fsm of vga_fsm is
-	-- any internal signals you may need
-		
 	signal coord: coordinate := make_coordinate(0, 0);
 begin
-	-- implement methodology to drive outputs here
-	-- use vga_data functions and types to make your life easier
-	
 	output_function: process(vga_clock, reset) is
 	begin
 		if reset = '0' then
@@ -60,7 +57,7 @@ begin
 			v_sync <= do_vertical_sync(coord, vga_res);
 			point_valid <= point_visible(coord, vga_res);
 			point <= coord;
-		elsif rising_edge(vga_clock) then
+		elsif enable = '1' and rising_edge(vga_clock) then
 			coord <= next_coordinate(coord, vga_res);
 			h_sync <= do_horizontal_sync(coord, vga_res);
 			v_sync <= do_vertical_sync(coord, vga_res);
@@ -68,5 +65,4 @@ begin
 			point <= coord;
 		end if;
 	end process output_function;
-
 end architecture fsm;
