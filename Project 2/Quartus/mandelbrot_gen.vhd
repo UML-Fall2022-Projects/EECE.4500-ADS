@@ -1,10 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-library vga;
-use vga.vga_data.all;
-use vga.vga_fsm_pkg.all;
-
 library ads;
 use ads.ads_fixed.all;
 use ads.ads_complex_pkg.all;
