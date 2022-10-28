@@ -4,7 +4,6 @@ use ieee.std_logic_1164.all;
 use std.textio.all;
 
 library work;
-use work.fractal_pkg.all;
 use work.netpbm_config.all;
 
 library ads;
@@ -29,21 +28,6 @@ architecture test_fixture of mandelbrot_netpbm_generator is
             index_o: out natural
         );
 	end component mandelbrot_gen;
-    
-    component complex_converter is
-        generic (
-            vga_res: vga_timing := vga_res_default
-        );
-        port (
-            vga_clock: in std_logic;
-            reset: in std_logic;
-            enable: in std_logic;
-            
-            pixel_coord: in coordinate;
-            complex_coord: out ads_complex
-        );
-    end component complex_converter;
-
 
 	signal iteration_test: natural range 0 to iterations + 1;
 
@@ -52,8 +36,8 @@ architecture test_fixture of mandelbrot_netpbm_generator is
 	signal reset: std_logic	:= '0';
 	signal enable: std_logic := '0';
 
-	signal iteration_count: natural range 0 to iterations;
-	signal output_valid_counter: natural;
+	signal iteration_count: natural;
+	signal output_valid_counter: natural := 0;
 
 	signal finished: boolean := false;
     
@@ -105,20 +89,19 @@ begin
 		enable <= '1';
 
 		for y_pt in 0 to y_steps-1 loop
-			y_coord := y_range.min + y_pt * dy;
+			y_coord := to_ads_sfixed(y_range.min) + to_ads_sfixed(y_pt) * dy;
 			for x_pt in 0 to x_steps-1 loop
-				x_coord := x_range.min + x_pt * dx;
+				x_coord := to_ads_sfixed(x_range.min) + to_ads_sfixed(x_pt) * dx;
 
 				-- set seed
 				seed <= ads_cmplx(x_coord, y_coord);
 				wait until rising_edge(clock);
                 
-                if output_valid_counter < iteration_count + 1 then
+                if output_valid_counter < iterations + 1 then
                     output_valid_counter <= output_valid_counter + 1;
                 else
 					write(output_line, integer'image(iterations - 1 - iteration_count));
 					writeline(output, output_line);
-					flush(output);
 				end if;
 			end loop;
 		end loop;
@@ -127,7 +110,6 @@ begin
 			wait until rising_edge(clock);
 			write(output_line, integer'image(iterations - 1 - iteration_count));
 			writeline(output, output_line);
-			flush(output);
 		end loop;
 
 		-- all done
