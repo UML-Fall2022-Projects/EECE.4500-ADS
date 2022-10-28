@@ -97,7 +97,7 @@ begin
 				seed <= ads_cmplx(x_coord, y_coord);
 				wait until rising_edge(clock);
                 
-                if output_valid_counter < iterations + 1 then
+                if output_valid_counter < iterations then
                     output_valid_counter <= output_valid_counter + 1;
                 else
 					write(output_line, integer'image(iterations - 1 - iteration_count));
