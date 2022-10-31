@@ -53,7 +53,7 @@ package body ads_complex_pkg is
 
 	-- function implementations
 	function "+" (
-			l, r: ads_complex
+			l, r: in ads_complex
 		) return ads_complex
 	is
 		variable ret: ads_complex;

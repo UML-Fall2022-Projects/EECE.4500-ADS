@@ -33,7 +33,7 @@ architecture test_fixture of mandelbrot_netpbm_generator is
 
 	signal seed: ads_complex;
 	signal clock: std_logic	:= '0';
-	signal reset: std_logic	:= '0';
+	signal reset: std_logic	:= '1';
 	signal enable: std_logic := '0';
 
 	signal iteration_count: natural;
@@ -82,9 +82,9 @@ begin
 
 		-- reset generator
 		wait until rising_edge(clock);
-		reset <= '1';
-		wait until rising_edge(clock);
 		reset <= '0';
+		wait until rising_edge(clock);
+		reset <= '1';
 
 		enable <= '1';
 
