@@ -23,8 +23,8 @@ end entity mandelbrot_gen;
 
 architecture mandel_gen of mandelbrot_gen is
 	type complex_array is array (natural range<>) of ads_complex;
-	signal f_of_z: complex_array(0 to iterations) := (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
-	signal coords_list: complex_array(0 to iterations) := (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
+	signal f_of_z: complex_array(0 to iterations) := (others => complex_zero);
+	signal coords_list: complex_array(0 to iterations) := (others => complex_zero);
 	
 	signal thresholds: std_logic_vector(0 to iterations) := (others => '0');
 	
@@ -38,12 +38,15 @@ begin
 		variable re_im: ads_sfixed;
 	begin
 		if reset = '0' then
-			f_of_z <= (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
-			coords_list <= (others => ads_cmplx(to_ads_sfixed(0), to_ads_sfixed(0)));
+			f_of_z <= (others => complex_zero);
+			coords_list <= (others => complex_zero);
 			thresholds <= (others => '0');
 			iteration_signal <= (others => 0);
 		elsif enable = '1' and rising_edge(vga_clock) then
 			coords_list(0) <= coords;
+			f_of_z(0) <= complex_zero;
+			thresholds(0) <= '0';
+			iteration_signal(0) <= 0;
 			for i in iterations downto 1 loop
 				coords_list(i) <= coords_list(i - 1);
 			
