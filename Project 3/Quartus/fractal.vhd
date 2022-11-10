@@ -38,6 +38,7 @@ architecture pipeline of fractal is
 	
 	signal seed_change_counter: natural := 0;
 	signal seed_index: seed_index_type := 0;
+	signal seed: ads_complex := complex_zero;
 
 	signal pixel: coordinate;
 	signal pixel_valid: boolean;
@@ -136,6 +137,7 @@ begin
 			vga_clock => vga_clock,
 			reset => reset,
 			enable => enable,
+			seed => seed,
 			
 			index_o => color_index
 		);
@@ -143,12 +145,14 @@ begin
 	seed_fetch: process(vga_clock, reset) is
 	begin
 		if reset = '0' then
+			seed <= complex_zero;
 			seed_index <= 0;
 			seed_change_counter <= 0;
 		elsif rising_edge(vga_clock) then
 			if seed_change_counter >= clock_delay then
 				seed_change_counter <= 0;
 				seed_index <= get_next_seed_index(seed_index);
+				seed <= seed_rom(seed_index);
 			else
 				seed_change_counter <= seed_change_counter + 1;
 			end if;

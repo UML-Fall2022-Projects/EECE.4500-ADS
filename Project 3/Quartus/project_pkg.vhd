@@ -34,6 +34,7 @@ package fractal_pkg is
 			vga_clock: in std_logic;
 			reset: in std_logic;
 			enable: in std_logic;
+			seed: in ads_complex;
 			
 			index_o: out natural
 		);
