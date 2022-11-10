@@ -15,8 +15,10 @@ entity mandelbrot_gen is
 		vga_clock: in std_logic;
 		reset: in std_logic;
 		enable: in std_logic;
+		seed: in ads_complex;
 		
 		index_o: out natural
+		
 	);
 end entity mandelbrot_gen;
 
@@ -44,7 +46,7 @@ begin
 			iteration_signal <= (others => 0);
 		elsif enable = '1' and rising_edge(vga_clock) then
 			coords_list(0) <= coords;
-			f_of_z(0) <= complex_zero;
+			f_of_z(0) <= seed;
 			thresholds(0) <= '0';
 			iteration_signal(0) <= 0;
 			for i in iterations downto 1 loop
