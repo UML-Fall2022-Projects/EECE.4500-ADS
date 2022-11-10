@@ -16,6 +16,7 @@ package vga_data is
 		horizontal:		timing_data;
 		vertical:		timing_data;
 		sync_polarity:	polarity;
+		clock: real;
 	end record vga_timing;
 
 	type coordinate is record
@@ -42,7 +43,8 @@ package vga_data is
 						sync_width => 5,			-- in lines
 						back_porch => 36			-- in lines
 					),
-				sync_polarity => active_high
+				sync_polarity => active_high,
+				clock => 148.5e6
 			), (
 				-- 640x480 @ 60 Hz
 				-- clock 25.175 MHz
@@ -58,7 +60,8 @@ package vga_data is
 						sync_width => 2,
 						back_porch => 33
 					),
-				sync_polarity => active_low
+				sync_polarity => active_low,
+				clock => 25.175e6
 			), (
 				-- add data here
 				-- 800x600 @ 60Hz
@@ -75,7 +78,8 @@ package vga_data is
 						sync_width => 4,
 						back_porch => 23
 					),
-				sync_polarity => active_high
+				sync_polarity => active_high,
+				clock => 40.0e6
 			)
 		);
 

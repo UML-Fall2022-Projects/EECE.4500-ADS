@@ -4,6 +4,7 @@ use ieee.numeric_std.all;
 
 library work;
 use work.fractal_pkg.all;
+use work.seed_table.all;
 
 library vga;
 use vga.vga_data.all;
@@ -16,7 +17,8 @@ use ads.ads_complex_pkg.all;
 entity fractal is
 	generic (
 		vga_res: vga_timing := vga_res_640x480;
-		iterations: natural := 28
+		iterations: natural := 28;
+		fps: natural := 3
 	);
 	port (
 		system_clock: in std_logic;
@@ -32,6 +34,11 @@ entity fractal is
 end entity fractal;
 
 architecture pipeline of fractal is
+	constant clock_delay: integer := integer(1.0 / real(fps) * vga_res.clock);
+	
+	signal seed_change_counter: natural := 0;
+	signal seed_index: seed_index_type := 0;
+
 	signal pixel: coordinate;
 	signal pixel_valid: boolean;
 	
@@ -132,6 +139,21 @@ begin
 			
 			index_o => color_index
 		);
+		
+	seed_fetch: process(vga_clock, reset) is
+	begin
+		if reset = '0' then
+			seed_index <= 0;
+			seed_change_counter <= 0;
+		elsif rising_edge(vga_clock) then
+			if seed_change_counter >= clock_delay then
+				seed_change_counter <= 0;
+				seed_index <= get_next_seed_index(seed_index);
+			else
+				seed_change_counter <= seed_change_counter + 1;
+			end if;
+		end if;
+	end process seed_fetch;
 	
 	r <= color_array(color_index)(0 to 3) when pixel_valid else (others => '0');
 	g <= color_array(color_index)(4 to 7) when pixel_valid else (others => '0');
