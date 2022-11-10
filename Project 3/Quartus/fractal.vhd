@@ -17,8 +17,8 @@ use ads.ads_complex_pkg.all;
 entity fractal is
 	generic (
 		vga_res: vga_timing := vga_res_640x480;
-		iterations: natural := 28;
-		fps: natural := 3
+		iterations: natural := 16;
+		fps: natural := 1
 	);
 	port (
 		system_clock: in std_logic;

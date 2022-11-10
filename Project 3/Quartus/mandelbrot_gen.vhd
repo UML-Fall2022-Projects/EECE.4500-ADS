@@ -45,8 +45,8 @@ begin
 			thresholds <= (others => '0');
 			iteration_signal <= (others => 0);
 		elsif enable = '1' and rising_edge(vga_clock) then
-			coords_list(0) <= coords;
-			f_of_z(0) <= seed;
+			coords_list(0) <= seed;
+			f_of_z(0) <= coords;
 			thresholds(0) <= '0';
 			iteration_signal(0) <= 0;
 			for i in iterations downto 1 loop
