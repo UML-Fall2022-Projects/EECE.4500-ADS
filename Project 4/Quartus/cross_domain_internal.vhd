@@ -18,7 +18,7 @@ architecture ffs of domain_cross_internal
 is
 	signal flip_flops: std_logic_vector(0 to 2);
 begin
-	dout <= flop_flop(2);
+	dout <= flip_flops(2);
 
 	clk1: process(clock1) is
 	begin
@@ -30,8 +30,8 @@ begin
 	clk2: process(clock2) is
 	begin
 		if rising_edge(clock2) then
-			flip_flop(2) <= flip_flop(1);
-			flip_flop(1) <= flip_flop(0);
+			flip_flops(2) <= flip_flops(1);
+			flip_flops(1) <= flip_flops(0);
 		end if;
 	end process clk2;
 end architecture ffs;

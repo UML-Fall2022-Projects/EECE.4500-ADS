@@ -7,7 +7,7 @@ entity bin_to_gray is
 	);
 	port (
 		bin_in: in std_logic_vector(input_width - 1 downto 0);
-		gray_out: in std_logic_vector(input_width - 1 downto 0)
+		gray_out: out std_logic_vector(input_width - 1 downto 0)
 	);
 end entity bin_to_gray;
 

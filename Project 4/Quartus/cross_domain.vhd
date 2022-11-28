@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 library work;
 use work.project_pkg.all;
 
-entity domain_crossing is
+entity cross_domain is
 	generic (
 		input_width: positive := 16
 	);
@@ -17,9 +17,9 @@ entity domain_crossing is
 		dout1: out std_logic_vector(input_width - 1 downto 0); -- output at side 1
 		dout2: out std_logic_vector(input_width - 1 downto 0) -- output at side 2
 	);
-end entity domain_crossing;
+end entity cross_domain;
 
-architecture crossing of domain_crossing is
+architecture crossing of cross_domain is
 	signal gray_out1: std_logic_vector(din1'range);
 	signal gray_out2: std_logic_vector(din2'range);
 	
@@ -55,7 +55,7 @@ begin
 				din => gray_out1(i),
 				dout => gray_cross1(i)
 			);
-	end loop;
+	end generate;
 	
 	b_to_a: for i in gray_out2'range generate
 		internal2: domain_cross_internal
@@ -65,7 +65,7 @@ begin
 				din => gray_out2(i),
 				dout => gray_cross2(i)
 			);
-	end loop;
+	end generate;
 	
 	gray_to_bin1: gray_to_bin
 		generic map (

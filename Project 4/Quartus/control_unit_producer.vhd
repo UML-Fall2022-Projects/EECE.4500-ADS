@@ -9,6 +9,6 @@ entity control_unit_producer is
 	port (
 		clock: in std_logic;
 		eoc: in std_logic;
-		out soc: out std_logic;
+		soc: out std_logic
 	);
-end entity control_unit_producter;
+end entity control_unit_producer;

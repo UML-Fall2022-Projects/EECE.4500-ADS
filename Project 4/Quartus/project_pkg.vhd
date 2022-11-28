@@ -14,7 +14,7 @@ package project_pkg is
 		);
 	end component max10_adc;
 	
-	component domain_crossing is
+	component cross_domain is
 		generic (
 			input_width: positive := 16
 		);
@@ -26,7 +26,7 @@ package project_pkg is
 			dout1: out std_logic_vector(input_width - 1 downto 0); -- output at side 1
 			dout2: out std_logic_vector(input_width - 1 downto 0) -- output at side 2
 		);
-	end component domain_crossing;
+	end component cross_domain;
 	
 	component bin_to_gray is
 		generic (
@@ -34,7 +34,7 @@ package project_pkg is
 		);
 		port (
 			bin_in: in std_logic_vector(input_width - 1 downto 0);
-			gray_out: in std_logic_vector(input_width - 1 downto 0)
+			gray_out: out std_logic_vector(input_width - 1 downto 0)
 		);
 	end component bin_to_gray;
 	
@@ -44,7 +44,7 @@ package project_pkg is
 		);
 		port (
 			gray_in: in std_logic_vector(input_width - 1 downto 0);
-			bin_out: in std_logic_vector(input_width - 1 downto 0)
+			bin_out: out std_logic_vector(input_width - 1 downto 0)
 		);
 	end component gray_to_bin;
 	
