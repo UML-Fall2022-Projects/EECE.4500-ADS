@@ -75,4 +75,20 @@ package project_pkg is
 			dout: out std_logic
 		);
 	end component domain_cross_internal;
+	
+	component control_unit_producer is
+		generic (
+			ADDR_WIDTH : natural := 6;
+			PTR_TOLERANCE: natural := 2
+		);
+		port (
+			clock: in std_logic;
+			reset: in std_logic;
+			tail_ptr: in natural range 0 to 2**ADDR_WIDTH - 1;
+			eoc: in std_logic;
+			soc: out std_logic;
+			buffer_write: out std_logic; -- TODO: ask if this is active high or low
+			head_ptr: buffer natural range 0 to 2**ADDR_WIDTH - 1
+		);
+	end component control_unit_producer;
 end package project_pkg;
