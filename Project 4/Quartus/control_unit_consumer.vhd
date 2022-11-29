@@ -5,28 +5,25 @@ use ieee.numeric_std.all;
 library work;
 use work.project_pkg.all;
 
-entity control_unit_producer is
+entity control_unit_consumer is
 	generic (
-		ADDR_WIDTH: natural := 6
+		ADDR_WIDTH : natural := 6
 	);
 	port (
 		clock: in std_logic;
 		reset: in std_logic;
-		tail_ptr: in natural range 0 to 2**ADDR_WIDTH - 1;
-		eoc: in std_logic;
-		soc: out std_logic;
-		buffer_write: out std_logic; -- active high
-		head_ptr: buffer natural range 0 to 2**ADDR_WIDTH - 1
+		head_ptr: in natural range 0 to 2**ADDR_WIDTH - 1;
+		tail_ptr: buffer natural range 0 to 2**ADDR_WIDTH - 1
 	);
-end entity control_unit_producer;
+end entity control_unit_consumer;
 
-architecture prod_fsm of control_unit_producer is
+architecture cons_fsm of control_unit_consumer is
 	-- Start sends signal to adc to start conversion
 	-- Waiting waits for eoc signal AND for head ptr
 	-- to be ahead or far enough behind the tail ptr (wrap around).
 	-- Increment increments the head ptr.
 	type state_type is
-		(Init, Start, Waiting, Store, Increment);
+		(Init, Start, Waiting, Reading, Increment);
 
 	signal state, next_state: state_type := Start;
 	
@@ -47,10 +44,10 @@ architecture prod_fsm of control_unit_producer is
 		) return boolean
 	is
 	begin
-		if head < tail then
-			return (tail - head) > 1;
-		elsif head = 2**ADDR_WIDTH - 1 then
-			return tail /= 0;
+		if tail < head then
+			return (head - tail) > 1;
+		elsif tail = 2**ADDR_WIDTH - 1 then
+			return head /= 0;
 		else
 			return true;
 		end if;
@@ -63,11 +60,10 @@ begin
 			when Init => next_state <= Start;
 			when Start => next_state <= Waiting;
 			when Waiting =>
-				if eoc = '1' and valid_ptrs(head_ptr, tail_ptr) then
-					next_state <= Store;
+				if valid_ptrs(head_ptr, tail_ptr) then
+					next_state <= Increment;
 				end if;
-			when Store => next_state <= Increment;
-			when Increment => next_state <= Start;
+			when Increment => next_state <= Waiting;
 			when others => next_state <= Start;
 		end case;
 	end process transition_function;
@@ -84,35 +80,19 @@ begin
 	output_function: process(clock) is
 	begin
 		if reset = '0' then
-			soc <= '0';
-			head_ptr <= 0;
-			buffer_write <= '0'; -- TODO: See declaration
-		elsif rising_edge(clock) then
+			tail_ptr <= 2**ADDR_WIDTH - 1;
+		elsif rising_edge(clock) then	
 			if state = Init then
-				head_ptr <= 0;
-				soc <= '0';
-				buffer_write <= '0';
+				tail_ptr <= 2**ADDR_WIDTH - 1;
 			end if;
 		
-			if state = Start or state = Waiting then
-				soc <= '1';
-			else
-				soc <= '0';
-			end if;
-			
-			if state = Store then
-				buffer_write <= '1';
-			else
-				buffer_write <= '0';
-			end if;
-			
 			if state = Increment then
-				if head_ptr >= 2**ADDR_WIDTH - 1 then
-					head_ptr <= 0;
+				if tail_ptr >= 2**ADDR_WIDTH - 1 then
+					tail_ptr <= 0;
 				else
-					head_ptr <= head_ptr + 1;
+					tail_ptr <= tail_ptr + 1;
 				end if;
 			end if;
 		end if;
 	end process output_function;
-end architecture prod_fsm;
+end architecture cons_fsm;

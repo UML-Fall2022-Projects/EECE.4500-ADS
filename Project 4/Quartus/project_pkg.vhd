@@ -21,10 +21,10 @@ package project_pkg is
 		port (
 			clock1: in std_logic; -- clock at side 1
 			clock2: in std_logic; -- clock at side 2
-			din1: in std_logic_vector(input_width - 1 downto 0); -- input at side 1
-			din2: in std_logic_vector(input_width - 1 downto 0); -- input at side 2
-			dout1: out std_logic_vector(input_width - 1 downto 0); -- output at side 1
-			dout2: out std_logic_vector(input_width - 1 downto 0) -- output at side 2
+			din1: in natural range 0 to 2**input_width - 1;
+			din2: in natural range 0 to 2**input_width - 1;
+			dout1: out natural range 0 to 2**input_width - 1;
+			dout2: out natural range 0 to 2**input_width - 1
 		);
 	end component cross_domain;
 	
@@ -78,8 +78,7 @@ package project_pkg is
 	
 	component control_unit_producer is
 		generic (
-			ADDR_WIDTH : natural := 6;
-			PTR_TOLERANCE: natural := 2
+			ADDR_WIDTH : natural := 6
 		);
 		port (
 			clock: in std_logic;
@@ -87,8 +86,27 @@ package project_pkg is
 			tail_ptr: in natural range 0 to 2**ADDR_WIDTH - 1;
 			eoc: in std_logic;
 			soc: out std_logic;
-			buffer_write: out std_logic; -- TODO: ask if this is active high or low
+			buffer_write: out std_logic;
 			head_ptr: buffer natural range 0 to 2**ADDR_WIDTH - 1
 		);
 	end component control_unit_producer;
+	
+	component control_unit_consumer is
+		generic (
+			ADDR_WIDTH : natural := 6
+		);
+		port (
+			clock: in std_logic;
+			reset: in std_logic;
+			head_ptr: in natural range 0 to 2**ADDR_WIDTH - 1;
+			tail_ptr: buffer natural range 0 to 2**ADDR_WIDTH - 1
+		);
+	end component control_unit_consumer;
+
+	component pll
+		port (
+			inclk0: IN STD_LOGIC := '0';
+			c0: OUT STD_LOGIC 
+		);
+	end component pll;
 end package project_pkg;

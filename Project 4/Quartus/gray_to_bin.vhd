@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 
 entity gray_to_bin is
 	generic (
-		input_width: positive := 16
+		input_width: positive := 12
 	);
 	port (
 		gray_in: in std_logic_vector(input_width - 1 downto 0);
