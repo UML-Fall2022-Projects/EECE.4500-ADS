@@ -25,7 +25,7 @@ architecture cons_fsm of control_unit_consumer is
 	type state_type is
 		(Init, Start, Waiting, Reading, Increment);
 
-	signal state, next_state: state_type := Start;
+	signal state, next_state: state_type := Init;
 	
 	function abs_difference(
 			a, b: in natural

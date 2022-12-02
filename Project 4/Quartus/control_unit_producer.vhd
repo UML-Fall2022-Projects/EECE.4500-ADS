@@ -28,7 +28,7 @@ architecture prod_fsm of control_unit_producer is
 	type state_type is
 		(Init, Start, Waiting, Store, Increment);
 
-	signal state, next_state: state_type := Start;
+	signal state, next_state: state_type := Init;
 	
 	function abs_difference(
 			a, b: in natural
