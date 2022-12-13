@@ -7,8 +7,9 @@ use work.seven_segment_pkg.all;
 
 entity seven_segment_agent is
 	generic (
-		lamp_mode: lamp_configuration := default_lamp_config;
+		lamp_mode_common_anode: boolean := true;
 		decimal_support: boolean := true;
+		blank_zeros_support: boolean := true;
 		implementer: natural := 232;
 		revision: natural := 0
 	);
@@ -19,56 +20,64 @@ entity seven_segment_agent is
 		reset_n: in std_logic;
 		
 		-- Address bu. Must be 2 bits wide
-		address: in std_logic_vector(0 to 1);
+		address: in std_logic_vector(1 downto 0);
 		
 		-- Active high signal indicating read transaction.
 		read: in std_logic;
 		
 		-- Read data bus. Must be 32 bits wide.
-		readdata: out std_logic_vector(0 to 31);
+		readdata: out std_logic_vector(31 downto 0);
 		
 		-- Active high signal indicating a write transaction.
 		write: in std_logic;
 		
 		-- Write data bus. Must be 32 bits wide.
-		writedata: in std_logic_vector(0 to 31);
+		writedata: in std_logic_vector(31 downto 0);
 		
 		-- Lamps output. Must be 42 bits wide.
-		lamps: out std_logic_vector(0 to (6 * 7 - 1))
+		lamps: out std_logic_vector((6 * 7 - 1) downto 0)
 	);
 end entity seven_segment_agent;
 
 architecture sseg_impl of seven_segment_agent is
-	signal data: std_logic_vector(0 to 31);
-	signal control: std_logic_vector(0 to 31);
+	function lamp_mode return lamp_configuration is
+	begin
+		if lamp_mode_common_anode then
+			return common_anode;
+		end if;
+		return common_cathode;
+	end function lamp_mode;
+
+	signal data: std_logic_vector(31 downto 0) := (others => '0');
+	signal control: std_logic_vector(31 downto 0) := (others => '0');
 	
 	function to_bcd(
-			data_value: in std_logic_vector(0 to 15)
+			data_value: in std_logic_vector(15 downto 0)
 		) return std_logic_vector
 	is
-		variable ret: std_logic_vector(0 to 19);
+		variable ret: std_logic_vector(19 downto 0);
 		variable temp: std_logic_vector(data_value'range);
 	begin
 		temp := data_value;
 		ret := (others => '0');
 		for i in data_value'range loop
 			for j in 0 to ret'length/4 - 1 loop
-				if unsigned(ret(4 * j to 4 * j + 3)) >= 5 then
-					ret(4 * j to 4 * j + 3) :=
-					std_logic_vector(unsigned(ret(4 * j to 4*j + 3)) + 3);
+				if unsigned(ret(4 * j + 3 downto 4 * j)) >= 5 then
+					ret(4 * j + 3 downto 4 * j) :=
+					std_logic_vector(unsigned(ret(4*j + 3 downto 4 * j)) + 3);
 				end if;
 			end loop;
-			ret := ret(0 to ret'high - 1) & temp(temp'high);
-			temp := temp(0 to temp'high - 1) & '0';
+			ret := ret(ret'high - 1 downto 0) & temp(temp'high);
+			temp := temp(temp'high - 1 downto 0) & '0';
 		end loop;
 		return ret;
 	end function to_bcd;
 	
 	function concatenate_sseg_configs(
-			seg_displays: in sseg_conf_array(0 to 5)
+			seg_displays: in sseg_conf_array(5 downto 0)
 		) return std_logic_vector
 	is
-		variable ret: std_logic_vector(0 to (7 * 6 - 1));
+		variable ret: std_logic_vector((7 * 6 - 1) downto 0);
 	begin
 		for i in 0 to 5 loop
 			ret(0 + i * 7) := seg_displays(i).a;
@@ -85,7 +94,7 @@ architecture sseg_impl of seven_segment_agent is
 	function generate_features
 		return std_logic_vector
 	is
-		variable ret: std_logic_vector(0 to 31);
+		variable ret: std_logic_vector(31 downto 0);
 	begin
 		ret := (others => '0');
 		if decimal_support then
@@ -93,6 +102,12 @@ architecture sseg_impl of seven_segment_agent is
 		else
 			ret(0) := '0';
 		end if;
+        
+        if blank_zeros_support then
+            ret(2) := '1';
+        else
+            ret(2) := '0';
+        end if;
 		
 		if lamp_mode = common_anode then
 			ret(3) := '1';
@@ -100,33 +115,44 @@ architecture sseg_impl of seven_segment_agent is
 			ret(3) := '0';
 		end if;
 		
-		ret(16 to 23) := std_logic_vector(to_unsigned(revision, 8));
-		ret(24 to 31) := std_logic_vector(to_unsigned(implementer, 8));
+		ret(23 downto 16) := std_logic_vector(to_unsigned(revision, 8));
+		ret(31 downto 24) := std_logic_vector(to_unsigned(implementer, 8));
 		return ret;
 	end function generate_features;
 	
-	constant features: std_logic_vector(0 to 31) := generate_features;
+	constant features: std_logic_vector(31 downto 0) := generate_features;
 	
 	function data_to_lamps(
-			data: in std_logic_vector(0 to 31);
-			control: in std_logic_vector(0 to 31)
+			data: in std_logic_vector(31 downto 0);
+			control: in std_logic_vector(31 downto 0)
 		) return std_logic_vector
 	is
-		variable ret: std_logic_vector(0 to (6 * 7 - 1));
-		variable bcd: std_logic_vector(0 to 19);
-		variable sseg_array: sseg_conf_array(0 to 5);
+		variable ret: std_logic_vector((6 * 7 - 1) downto 0);
+		variable bcd: std_logic_vector(19 downto 0);
+        variable bcd_int: integer;
+		variable sseg_array: sseg_conf_array(5 downto 0);
 	begin
-		sseg_array := (others => get_hex_digit(0, lamp_mode));
-		if decimal_support = true and control(1) = '1' then
-			bcd := to_bcd(data(0 to 15));
-			for i in 0 to 4 loop
-				sseg_array(i) := get_hex_digit(to_integer(unsigned(bcd(i * 4 to 3 + i * 4))), lamp_mode);
-			end loop;
-		else
-			for i in 0 to 5 loop
-				sseg_array(i) := get_hex_digit(to_integer(unsigned(data(i * 4 to 3 + i * 4))), lamp_mode);
-			end loop;
-		end if;
+        if control(0) = '0' then
+            sseg_array := (others => lamps_off(lamp_mode));
+        elsif decimal_support and control(1) = '1' then
+            if control(2) = '1' then
+                sseg_array := (others => lamps_off(lamp_mode));
+            else
+                sseg_array := (others => get_hex_digit(0, lamp_mode));
+            end if;
+            bcd := to_bcd(data(15 downto 0));
+            for i in 0 to 4 loop
+                bcd_int := to_integer(unsigned(bcd(3 + i * 4 downto i * 4)));
+                if bcd_int /= 0 then
+                    sseg_array(i) := get_hex_digit(bcd_int, lamp_mode);
+                end if;
+            end loop;
+        else
+            sseg_array := (others => get_hex_digit(0, lamp_mode));
+            for i in 0 to 5 loop
+                sseg_array(i) := get_hex_digit(to_integer(unsigned(data(3 + i * 4 downto i * 4))), lamp_mode);
+            end loop;
+        end if;
 		return concatenate_sseg_configs(sseg_array);
 	end function data_to_lamps;
 begin
@@ -145,16 +171,21 @@ begin
 					when "01" => readdata <= control;
 					when "10" => readdata <= features;
 					when "11" => readdata <= std_logic_vector(to_unsigned(16#41445335#, 32));
-				end case;
+                    when others => null;
+                end case;
 			elsif write = '1' then
 				case address is
 					when "00" => data <= writedata;
 					when "01" =>
-						if decimal_support = true then
-							control(0 to 1) <= writedata(0 to 1);
-						else
-							control(0) <= writedata(0);
+                        control(0) <= writedata(0);
+                        
+						if decimal_support then
+							control(1) <= writedata(1);
 						end if;
+                        
+                        if blank_zeros_support then
+                            control(2) <= writedata(2);
+                        end if;
 					when others => null;
 				end case;
 			end if;

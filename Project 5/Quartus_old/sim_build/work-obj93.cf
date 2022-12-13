@@ -1,0 +1,7 @@
+v 4
+file / "/home/patrick/UML/advanced_system_design/EECE.4500-ADS/Project_5/Quartus/seven_segment.vhd" "4c106f1d80cdd71a77f203930f8ac6e229bb6a22" "20221209195009.142":
+  package seven_segment_pkg at 1( 0) + 0 on 11 body;
+  package body seven_segment_pkg at 56( 1715) + 0 on 12;
+file / "/home/patrick/UML/advanced_system_design/EECE.4500-ADS/Project_5/Quartus/seven_segment_agent.vhd" "5d3708f9875c8f4c90bce1d4bdacd7dd765b5c89" "20221209195009.177":
+  entity seven_segment_agent at 1( 0) + 0 on 13;
+  architecture sseg_impl of seven_segment_agent at 42( 1044) + 0 on 14;
